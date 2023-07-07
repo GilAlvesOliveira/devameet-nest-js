@@ -1,16 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { MeetService } from './meet.service';
-import { GeetMeetDto } from './dtos/geetmeet.dto';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Request } from '@nestjs/common';
 import { CreateMeetDto } from './dtos/createmeet.dto';
+import { GetMeetDto } from './dtos/getmeet.dto';
+import { MeetService } from './meet.service';
 
 @Controller('meet')
 export class MeetController {
     constructor(
         private readonly service: MeetService
-    ) {}
+    ){}
 
     @Get()
-    async getUser(@Request() req) {
+    async getUser(@Request() req){
         const { userId } = req?.user;
 
         const result = await this.service.getMeetsByUser(userId);
@@ -19,17 +19,18 @@ export class MeetController {
             id: m._id.toString(),
             name: m.name,
             color: m.color,
-            link: m.Link
-        }) as GeetMeetDto);
+            link: m.link
+        }) as GetMeetDto);
     }
 
     @Post()
-    async createMeet(@Request() req, @Body() dto: CreateMeetDto) {
+    async createMeet(@Request() req, @Body() dto: CreateMeetDto){
+        const { userId } = req?.user;
         await this.service.createMeet(userId, dto);
     }
 
     @Delete(':id')
-    async deleteMeet(@Request() req, @Param() params) {
+    async deleteMeet(@Request() req, @Param() params){
         const { userId } = req?.user;
         const { id } = params;
         await this.service.deleteMeetByUser(userId, id);

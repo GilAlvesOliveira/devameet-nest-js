@@ -10,13 +10,13 @@ export class Meet {
     user: User;
 
     @Prop({required: true})
-    name: string;
+    name:string;
 
     @Prop({required: true})
-    color: string;
-    
+    color:string;
+
     @Prop({required: true})
-    Link: string;
+    link:string;
 }
 
 export const MeetSchema = SchemaFactory.createForClass(Meet);

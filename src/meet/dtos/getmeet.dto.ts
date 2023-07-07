@@ -1,6 +1,6 @@
-export class GeetMeetDto {
+export class GetMeetDto {
     id: string;
     color: string;
     name: string;
-    Link: string;
+    link: string;
 }

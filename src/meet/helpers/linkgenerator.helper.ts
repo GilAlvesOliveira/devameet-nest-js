@@ -6,7 +6,7 @@ export const generateLink = () => {
     let randomString = '';
 
     for (let i = 0; i < size; i++) {
-        if (i === 3 || i === 8) {
+        if (i === 3 || i === 8){
             randomString += '-';
         } else {
             let rnum = Math.floor(Math.random()* chars.length);
