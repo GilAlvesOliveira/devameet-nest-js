@@ -1,8 +1,8 @@
 import { IsNumber, IsString, Max, Min } from "class-validator";
-import { JoimRoomDto } from "./joinroom.dto";
+import { JoinRoomDto } from "./joinroom.dto";
 import { MeetMessagesHelper } from "src/meet/helpers/meetmessages.helper";
 
-export class UpdateUserPositionDto extends JoimRoomDto {
+export class UpdateUserPositionDto extends JoinRoomDto {
     @IsNumber({}, {message: MeetMessagesHelper.UPDATE_XY_NOT_VALID})
     @Min(0, {message: MeetMessagesHelper.UPDATE_XY_NOT_VALID})
     @Max(8, {message: MeetMessagesHelper.UPDATE_XY_NOT_VALID})

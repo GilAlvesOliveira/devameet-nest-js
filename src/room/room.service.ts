@@ -53,7 +53,7 @@ export class RoomService {
         const user = await this.userService.getUserById(dto.userId);
 
         if(!user){
-            throw new BadRequestException(RoomMessagesHelper.JOIM_LINK_NOT_VALID);
+            throw new BadRequestException(RoomMessagesHelper.JOIN_LINK_NOT_VALID);
         }
 
         const position = {
@@ -91,7 +91,7 @@ export class RoomService {
     async _getMeet(link: string) {
         const meet = await this.meetModel.findOne({link});
         if (!meet) {
-            throw new BadRequestException(RoomMessagesHelper.JOIM_LINK_NOT_VALID);
+            throw new BadRequestException(RoomMessagesHelper.JOIN_LINK_NOT_VALID);
         }
 
         return meet;
