@@ -1,4 +1,4 @@
-import { BadGatewayException, BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Meet, MeetDocument } from 'src/meet/schemas/meet.schema';
@@ -27,14 +27,14 @@ export class RoomService {
         const objects = await this.objectModel.find({meet});
 
             return {
-                link, 
+                link,
                 name: meet.name,
                 color: meet.color,
                 objects
             };
-        }
+    }
 
-    async listUsersPositionByLink(link: string){
+    async listUsersPositionByLink(link: string) {
         this.logger.debug(`listUsersPositionByLink - ${link}`);
 
         const meet = await this._getMeet(link);
@@ -46,41 +46,42 @@ export class RoomService {
         return await this.positionModel.deleteMany({clientId});
     }
 
-    async updateUserPosition(dto: UpdateUserPositionDto) {
+    async updateUserPosition(clientId: string, dto : UpdateUserPositionDto) {
         this.logger.debug(`listUsersPositionByLink - ${dto.link}`);
 
         const meet = await this._getMeet(dto.link);
         const user = await this.userService.getUserById(dto.userId);
 
-        if(!user) {
-            throw new BadGatewayException(RoomMessagesHelper.JOIM_USER_NOT_VALID);
+        if(!user){
+            throw new BadRequestException(RoomMessagesHelper.JOIM_LINK_NOT_VALID);
         }
 
         const position = {
             ...dto,
-             clientId,
-             user, meet,
-             name: user.name,
-             avatar: user.avatar
+            clientId,
+            user,
+            meet,
+            name: user.name,
+            avatar: user.avatar
         }
 
         const usersInRoom = await this.positionModel.find({meet});
-        const loggedUserInRoom = usersInRoom.find(u =>
+        const loogedUserInRoom = usersInRoom.find(u =>
             u.user.toString() === user._id.toString() || u.clientId === clientId);
+        
+        if(loogedUserInRoom){
+            await this.positionModel.findByIdAndUpdate({_id: loogedUserInRoom._id},position);
+        }else{
+            if(usersInRoom && usersInRoom.length > 10){
+                throw new BadRequestException(RoomMessagesHelper.ROOM_MAX_USERS);
+            };
 
-            if (loggedUserInRoom) {
-                await this.positionModel.findByIdAndUpdate({_id: loggedUserInRoom._id}, position);
-            } else {
-                if (usersInRoom && usersInRoom.length > 10) {
-                    throw new BadRequestException(RoomMessagesHelper.ROOM_MAX_USERS);
-                }
-
-                await this.positionModel.create(position);
-            }
+            await this.positionModel.create(position);
+        }
     }
 
     async updateUserMute(dto: ToglMuteDto) {
-        this.logger.debug(`UpdateUserMute - ${dto.link} - ${dto.userId}`);
+        this.logger.debug(`updateUserMute - ${dto.link} - ${dto.userId}`);
 
         const meet = await this._getMeet(dto.link);
         const user = await this.userService.getUserById(dto.userId);
@@ -90,7 +91,7 @@ export class RoomService {
     async _getMeet(link: string) {
         const meet = await this.meetModel.findOne({link});
         if (!meet) {
-            throw new BadRequestException(RoomMessagesHelper.JOIM_LINK_NOT_VALID)
+            throw new BadRequestException(RoomMessagesHelper.JOIM_LINK_NOT_VALID);
         }
 
         return meet;
