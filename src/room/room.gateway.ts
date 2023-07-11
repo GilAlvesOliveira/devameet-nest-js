@@ -28,14 +28,14 @@ export class RoomGateway implements OnGatewayInit, OnGatewayDisconnect {
     );
 
     if(!existingOnSocket) return;
-    
+
     this.activeSockets = this.activeSockets.filter(
       socket => socket.id !== client.id
     );
 
     await this.service.deleteUsersPosition(client.id);
-    client.broadcast.emit(`${existingOnSocket.room}-remove-user`, {SocketId: client.id})
-      
+    client.broadcast.emit(`${existingOnSocket.room}-remove-user`, {socketId: client.id});
+
     this.logger.debug(`Client: ${client.id} disconnected`);
   }
 
